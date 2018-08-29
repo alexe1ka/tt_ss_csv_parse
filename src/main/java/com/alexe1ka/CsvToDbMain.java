@@ -1,10 +1,11 @@
 package com.alexe1ka;
 
-import jdk.nashorn.internal.ir.LiteralNode;
 import org.apache.commons.lang3.StringUtils;
 
-import java.sql.*;
-import java.util.Arrays;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 public class CsvToDbMain {
@@ -17,25 +18,31 @@ public class CsvToDbMain {
     public static void main(String[] args) {
         CsvDataReader csvReader = new CsvDataReader("data.csv");
         List<String[]> dataList = csvReader.getAllDataFromCsv();
-//        csvReader.printDataFromCsvToConsole();
+        csvReader.printDataFromCsvToConsole();
         CsvToDbMain csvToDbMain = new CsvToDbMain();
         csvToDbMain.writeParseDataToDb(dataList);
     }
 
-    public void writeParseDataToDb(List<String[]> dataList) {
-        //write to database
+    private Connection connection() {
         String url = "jdbc:postgresql://localhost:5433/test_database";
         String user = "test";
         String password = "test";
-
-
         Connection connection = null;
+        try {
+            connection = DriverManager.getConnection(url, user, password);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return connection;
+    }
+
+    public void writeParseDataToDb(List<String[]> dataList) {
+        //write to database
         Statement statement = null;
         try {
             Class.forName("org.postgresql.Driver");
-            connection = DriverManager.getConnection(url, user, password);
             System.out.println("Opened database successfully");
-            statement = connection.createStatement();
+            statement = this.connection().createStatement();
             //запрос для создания таблицы.названия колонок таблицы должны быть в первой строке csv файла
             //второй вариант - игнорировать первую строку с именами колонок в файле и в запросе непосредственно прописать названия колонок таблицы в бд
             StringBuilder sql = new StringBuilder();
@@ -59,20 +66,18 @@ public class CsvToDbMain {
                 System.out.println("Query: " + insertQuery);
                 statement.executeUpdate(insertQuery);
             }
-//            statement.close();
-//            connection.close();
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
         } finally {
             try {
                 if (statement != null)
-                    connection.close();
+                    this.connection().close();
             } catch (SQLException se) {
             }
             try {
-                if (connection != null) {
-                    connection.close();
+                if (this.connection() != null) {
+                    this.connection().close();
                 }
             } catch (SQLException se) {
                 se.printStackTrace();

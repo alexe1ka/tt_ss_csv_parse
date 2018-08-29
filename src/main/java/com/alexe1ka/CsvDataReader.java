@@ -19,7 +19,6 @@ public class CsvDataReader {
 
     //читает именно ВЕСЬ файл.для больших файл так делать нельзя
     private void readDataFromCsv() {
-
         try (
                 Reader reader = Files.newBufferedReader(Paths.get(this.csvFilePath));
                 //skip lines - чтобы не читать строку с названиями колонок
@@ -28,9 +27,15 @@ public class CsvDataReader {
                 CSVReader csvReader = new CSVReader(reader);
         ) {
             this.allDataFromCsv = csvReader.readAll();
+            if (this.allDataFromCsv == null || this.allDataFromCsv.size() == 0) {
+                throw new Exception("File don't contains data");
+            }
         } catch (IOException e) {
             System.out.println("File not found");
             e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(-1);
         }
     }
 
