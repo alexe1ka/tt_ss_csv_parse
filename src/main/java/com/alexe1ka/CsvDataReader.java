@@ -16,10 +16,12 @@ public class CsvDataReader {
         this.csvFilePath = csvFilePath;
     }
 
+
+    //читает именно ВЕСЬ файл.для больших файл так делать нельзя
     private void readDataFromCsv() {
+
         try (
                 Reader reader = Files.newBufferedReader(Paths.get(this.csvFilePath));
-
                 //skip lines - чтобы не читать строку с названиями колонок
                 //TODO но можно оставить и по первой строке генерить запрос на создание таблицы
 //                CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();
