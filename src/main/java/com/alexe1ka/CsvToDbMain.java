@@ -20,7 +20,6 @@ public class CsvToDbMain {
 //        csvReader.printDataFromCsvToConsole();
         CsvToDbMain csvToDbMain = new CsvToDbMain();
         csvToDbMain.writeParseDataToDb(dataList);
-
     }
 
     public void writeParseDataToDb(List<String[]> dataList) {
@@ -36,13 +35,11 @@ public class CsvToDbMain {
             Class.forName("org.postgresql.Driver");
             connection = DriverManager.getConnection(url, user, password);
             System.out.println("Opened database successfully");
-
             statement = connection.createStatement();
-
             //запрос для создания таблицы.названия колонок таблицы должны быть в первой строке csv файла
             //второй вариант - игнорировать первую строку с именами колонок в файле и в запросе непосредственно прописать названия колонок таблицы в бд
             StringBuilder sql = new StringBuilder();
-            sql.append("drop table if exists data;");
+            sql.append("drop table if exists data;");//TODO старая таблица УДАЛЯЕТСЯ
             sql.append("CREATE TABLE IF not  EXISTS DATA (");
             sql.append(dataList.get(0)[0]).append(" VARCHAR(100) Primary Key not null,");
             sql.append(dataList.get(0)[1]).append(" VARCHAR(100) not null,");
@@ -58,13 +55,12 @@ public class CsvToDbMain {
             //c 1 потому что в 0 строке название столбцов
             for (int i = 1; i < dataList.size(); i++) {
                 String values = createInsertBodyQuery(dataList.get(i));
-                String insertQuery = query.replaceFirst(VALUES_REGEX,values);
+                String insertQuery = query.replaceFirst(VALUES_REGEX, values);
                 System.out.println("Query: " + insertQuery);
                 statement.executeUpdate(insertQuery);
             }
-
-            statement.close();
-            connection.close();
+//            statement.close();
+//            connection.close();
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
