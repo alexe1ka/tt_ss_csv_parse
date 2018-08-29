@@ -1,7 +1,6 @@
 package com.alexe1ka;
 
 import com.opencsv.CSVReader;
-import com.opencsv.CSVReaderBuilder;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -11,37 +10,43 @@ import java.util.List;
 
 public class CsvDataReader {
     private String csvFilePath;
-    private List<String[]> dataFromCsv;
+    private List<String[]> allDataFromCsv;
 
     public CsvDataReader(String csvFilePath) {
         this.csvFilePath = csvFilePath;
     }
 
-    private void readDataFromCsv(){
+    private void readDataFromCsv() {
         try (
                 Reader reader = Files.newBufferedReader(Paths.get(this.csvFilePath));
-                CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();
+
                 //skip lines - чтобы не читать строку с названиями колонок
+                //TODO но можно оставить и по первой строке генерить запрос на создание таблицы
+//                CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();
+                CSVReader csvReader = new CSVReader(reader);
         ) {
-            this.dataFromCsv = csvReader.readAll();
+            this.allDataFromCsv = csvReader.readAll();
         } catch (IOException e) {
             System.out.println("File not found");
             e.printStackTrace();
         }
     }
 
-    public List<String[]> getDataFromCsv() {
+    public List<String[]> getAllDataFromCsv() {
         readDataFromCsv();
-        return this.dataFromCsv;
+        return this.allDataFromCsv;
     }
 
     //вспомогательный метод для вывода данных csv файла в консоль
     public void printDataFromCsvToConsole() {
-        for (String[] record : this.dataFromCsv) {
-            System.out.println("FIO: " + record[0]);
-            System.out.println("CITY : " + record[1]);
-            System.out.println("AGE : " + record[2]);
-            System.out.println("POSITION : " + record[3]);
+        if (this.allDataFromCsv == null) {
+            throw new UnsupportedOperationException("Сначала необходимо считать данные из файла");
+        }
+        for (String[] record : this.allDataFromCsv) {
+            System.out.println("0 : " + record[0]);
+            System.out.println("1 : " + record[1]);
+            System.out.println("2 : " + record[2]);
+            System.out.println("3 : " + record[3]);
             System.out.println("---------------------------");
         }
     }
