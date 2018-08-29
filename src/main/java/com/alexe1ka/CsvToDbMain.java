@@ -34,12 +34,6 @@ public class CsvToDbMain {
             sql.append(dataList.get(0)[2]).append(" int not null,");
             sql.append(dataList.get(0)[3]).append(" VARCHAR(100) not null)");
             System.out.println(sql);
-
-//                    "(ID INT PRIMARY KEY     NOT NULL," +
-//                    " NAME           TEXT    NOT NULL, " +
-//                    " AGE            INT     NOT NULL, " +
-//                    " ADDRESS        CHAR(50), " +
-//                    " SALARY         REAL)";
             statement.executeUpdate(sql.toString());
             statement.close();
             c.close();
